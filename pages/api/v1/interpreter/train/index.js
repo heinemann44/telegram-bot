@@ -1,6 +1,6 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
-import telegram from "models/telegram.js";
+import interpreter from "models/interpreter";
 
 const router = createRouter();
 
@@ -9,12 +9,7 @@ router.post(postHandler);
 export default router.handler(controller.errorHandler);
 
 async function postHandler(request, response) {
-  // console.log("Webhook received: ", request.body);
-
-  await telegram.sendMessage(
-    request.body.message.chat.id,
-    request.body.message.text,
-  );
+  await interpreter.train();
 
   return response.status(200).json({});
 }

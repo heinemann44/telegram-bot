@@ -1,3 +1,5 @@
+import interpreter from "models/interpreter.js";
+
 async function setWebhook() {
   const baseUrl = process.env.TELEGRAM_HOST;
   const token = process.env.TELEGRAM_TOKEN;
@@ -19,9 +21,30 @@ async function setWebhook() {
 async function sendMessage(chatId, text) {
   const baseUrl = process.env.TELEGRAM_HOST;
   const token = process.env.TELEGRAM_TOKEN;
-  const completeUrl = `${baseUrl}/bot${token}/sendMessage?chat_id=${chatId}&text=${text}`;
 
-  const response = await fetch(completeUrl);
+  console.log("Chat ID: ", chatId);
+
+  const answer = interpreter.generateAnswer(text);
+
+  const completeUrl = `${baseUrl}/bot${token}/sendMessage`;
+
+  const response = await fetch(completeUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: answer,
+      reply_markup: {
+        keyboard: [
+          [{ text: "📸 Ver Fotos e Vídeos" }],
+          [{ text: "📚 Meus contéudos" }],
+        ],
+        resize_keyboard: true,
+      },
+    }),
+  });
 
   const responseBody = await response.json();
 
